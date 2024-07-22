@@ -1,0 +1,220 @@
+version 2016.02.28
+プロトコル		UDP
+ポート番号		50000
+ターミネータ文字	LF(0x0A)
+
+/* ---------- 取得 ---------- */
+・--- 世界日時取得 ---
+　現在の日時(世界時刻)を得ます
+　PC -> SERV
+　 GWDT
+
+　SERV -> PC
+　 GWTI,YYYYMMDD,HHmmss.xxx
+　　YYYYMMDD:年月日
+　　HHmmss:時分秒(24h)
+　　xxx:ミリ秒
+
+・--- UTC日時取得 ---
+　現在の日時(世界時刻)を得ます
+　PC -> SERV
+　 GUDT
+
+　SERV -> PC
+　 GUDT,YYYYMMDD,HHmmss.xxx
+　　YYYYMMDD:年月日
+　　HHmmss:時分秒(24h)
+　　xxx:ミリ秒
+
+・--- 動作ステータス取得 ---
+　現在のステータス状態を得ます。
+　PC -> SERV
+　 GSTS
+
+　SERV -> PC
+　 GSTS,XXXX(ビット対応)
+　　00:時刻同期中
+　　01:LI1
+　　02:LI2
+　　03:予約
+　　04:予約
+　　05:予約
+　　06:予約
+　　07:予約
+　　08:DHCP有効
+　　09:時刻配信有効
+　　10:予約
+　　11:予約
+　　12:予約
+　　13:予約
+　　14:LANケーブル リンク中
+　　15:エラー発生中
+
+・--- 動作モード取得 ---
+　現在の動作モード状態を得ます。
+　PC -> SERV
+　 GMOD
+
+　SERV -> PC
+　 GMOD,XXXX(ビット対応)
+　　00:NTP問い合わせ補正モード
+　　01:NTPブロードキャスト補正モード
+　　02:GPS(FURUNO)
+　　03:GPS(MTK3339)
+　　04:GPS(UNIVERSAL)
+　　05:時刻取得 FURUNO(GPtps)
+　　06:時刻取得 FURUNO(GPZDA)
+　　07:時刻取得 GPRMC
+　　08:時刻取得 GPZDA
+　　09:予約
+　　10:RWC MODE(JJY)
+　　11:DHCP使用
+　　12:予約
+　　13:NMEA出力モード
+　　14:7SEGあり
+　　15:予約
+
+・--- ARPテーブル取得 ---
+　
+ PC -> UDP
+　 GARP
+
+　UDP -> PC
+　 GARP,f,iii.iii.iii.iii,mmmmmmmmmmmm,...
+　 f: N:なし D:ダイナミック S:スタティック
+　 i: IPアドレス(15文字固定)
+　 m: MACアドレス(12文字固定)
+
+・--- イベント数取得 ---
+　
+ PC -> UDP
+　 GEVN
+
+　UDP -> PC
+　 GEVN,xx
+
+・--- イベントコード取得 ---
+　
+ PC -> UDP
+　 GECD,XX
+
+　UDP -> PC
+　 GECD,XX,xx
+XX:インデックス(1-16), xx:イベントコード
+ 00 NONE(イベントなし)
+ 01 POWER ON
+ 02 EXTERNAL RESET
+ 03 BROWN OUT RESET
+ 04 WATCHDOG TIMER RESET
+ 05 ENC28J60 RECEIVE ERROR
+ 06 ARP REQUEST TIMEOUT ERROR
+ 07 ICMP PACKET CHECK SUM ERROR
+ 08 TCP PACKET CHECK SUM ERROR
+ 09 UDP PACKET CHECK SUM ERROR
+ 10 ICMP MESSAGE
+ 11 DHCP RECEIVE NAK(RETRY)
+ 12 DHCP RENEWAL STATE
+ 13 DHCP REBIND STATE
+ 14 DHCP EXPIRED STATE
+ 15 DHCP RECEIVE PACKET ERROR
+ 16 NBT RECEIVE ERROR
+ 17 NBT FORMAT ERROR
+ 18 NBT PACKET ERROR
+ 19 NBT TIME OUT(SERVER1)
+ 20 NBT TIME OUT(SERVER2)
+ 21 NBT TIME OUT(SERVER3)
+ 22 NBT TIME OUT(SERVER4)
+ 23 DNS TIME OUT(SERVER1)
+ 24 DNS TIME OUT(SERVER2)
+ 25 DNS TIME OUT(SERVER3)
+ 26 DNS TIME OUT(SERVER4)
+ 27 NTP UNSYNCRONIZED
+ 28 NTP TIME OUT(SERVER1)
+ 29 NTP TIME OUT(SERVER2)
+ 30 NTP TIME OUT(SERVER3)
+ 31 NTP TIME OUT(SERVER4)
+ 32 NTP ILLEGAL SERVER REPLY
+ 33 NTP LEAP SECOND ADJUST
+ 34 TIME ILLEGAL
+ 35 GPS NMEA FORMAT ERROR
+ 36 NMEA CHECKSUM ERROR
+ 37 TIME DATA RECEIVE ERROR
+ 38 UNSYNC TIMEUP
+ 39 MTK3339 INITIAL ERROR
+
+・--- MACアドレス取得 ---
+　基板のMACアドレスを得ます。
+ PC -> UDP
+　 GMAC
+
+　UDP -> PC
+　 GMAC,XX-XX-XX-XX-XX-XX
+
+・--- バージョン取得 ---
+　基板のファームウェアバージョンを得ます。
+ PC -> UDP
+　 GVER
+
+　UDP -> PC
+　 GVER,x.xx.xx
+
+/* ---------- 設定 ---------- */
+・--- ARPスタティック登録 ---
+　ARPテーブルに登録します。
+ PC -> UDP
+　 SARP,iii.iii.iii.iii,mmmmmmmmmmmm
+　 i: IPアドレス(15文字固定)
+　 m: MACアドレス(12文字固定)
+
+ UDP -> PC
+　 SARP,OK(登録された)
+　 SARP,NG(存在しないまたは登録できなかった)
+
+/* ---------- 解除、クリア ---------- */
+・--- ARP削除 ---
+　ARPテーブルから該当のエントリを削除します。
+ PC -> UDP
+　 CARP,iii.iii.iii.iii
+　 i: IPアドレス(15文字固定)
+
+ UDP -> PC
+　 CARP,OK(削除された)
+　 CARP,NG(存在しない)
+
+・--- エラークリア ---
+　エラー出力をクリアします
+ PC -> UDP
+　 COUT
+
+ UDP -> PC
+　 COUT,OK
+
+・--- イベントログクリア ---
+　ログを消去します
+ PC -> UDP
+　 CLOG
+
+ UDP -> PC
+　 CLOG,OK
+
+・--- 時刻同期 ---
+　周期に関わらず時刻要求を行います
+ PC -> UDP
+　 SYNC
+
+ UDP -> PC
+　 SYNC,OK
+
+/* ---------- エラー応答(コマンド共通) ---------- */
+　SERV -> PC
+COMD,Exx
+　COMD:送られたコマンド
+　Exx:エラーコード
+
+エラーコード
+E00	送られたコマンドは存在しない
+E01	パラメータ範囲外
+E02	動作できる状態ではない(モードが違うなど)
+E	
+E	
+E	

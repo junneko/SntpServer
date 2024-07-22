@@ -1,0 +1,24 @@
+Windows7での時刻同期設定例
+(設定は良く確認し、自己責任で行ってください)
+
+・レジストリの編集
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time
+ \Config	MinPollInterval	6(64sec)
+		MaxPollInterval	10(1024sec)
+		UpdateInterval	1800(3min)
+ \Parameters	NtpServer	192.168.1.10,0x9
+				(IPアドレスまたはNetBIOS名で設定)
+		Type		NTP
+ \TimeProviders
+  \NtpClient	SpecialPollInterval	1800(3min)
+
+・サービス開始の設定(再起動後)
+　コントロールパネル→システムとセキュリティ→管理ツール→サービス
+　Windows Timeを自動または自動(遅延開始)に設定
+
+・参考設定例
+　windows7～
+　http://freesoft.tvbok.com/tips/pc_windows/wintimecontrol.html
+
+　～Vista
+　http://freesoft.tvbok.com/tips/pc_windows/wintimecontrol_xp.html
